@@ -18,3 +18,8 @@ print(s4.upper())  # Converts to uppercase
 print(s4.lower())  # Converts to lowercase
 print(s4.title())  # Converts to title case
 print(s4.capitalize())  # Capitalizes the first character
+
+#startswith(), endswith()
+s5= "Ajeet Gupta is learning python."
+print(s5.startswith("Ajeet"))  #True
+print(s5.endswith("python."))  #True
