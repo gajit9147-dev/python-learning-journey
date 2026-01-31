@@ -16,3 +16,5 @@ compound_interest = P * (1 + R / 100) ** T - P
 
 print(f"The Simple Interest is: {simple_interest:.2f}")
 print(f"The Compound Interest is: {compound_interest:.2f}")
+print(f"The total amount after {T} years with Simple Interest is: {P + simple_interest:.2f}")
+print(f"The total amount after {T} years with Compound Interest is: {P + compound_interest:.2f}")
