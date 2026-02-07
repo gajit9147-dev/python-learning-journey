@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guess The Number</title>
+  <style>
+    :root {
+      --bg: #f6f2e9;
+      --ink: #1f1f1f;
+      --accent: #e36f4c;
+      --card: #fff7ea;
+      --shadow: rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Georgia", "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 20%, #f9d8c5 0%, transparent 45%),
+        radial-gradient(circle at 80% 30%, #cde8f6 0%, transparent 45%),
+        var(--bg);
+    }
+
+    .card {
+      width: min(520px, 92vw);
+      padding: 32px 28px;
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px var(--shadow);
+      border: 2px solid #f1c9b6;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      margin: 0 0 18px;
+      line-height: 1.5;
+    }
+
+    .label {
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      color: #6c4d3b;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0 14px;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 2px solid #e2b6a1;
+      font-size: 1rem;
+      background: #fff;
+    }
+
+    button {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(227, 111, 76, 0.35);
+    }
+
+    .status {
+      margin-top: 10px;
+      font-weight: 700;
+      color: #5a3f2f;
+    }
+
+    .attempts {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: #7a5d4a;
+    }
+
+    .note {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: #6b6b6b;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="label">Python Project</div>
+    <h1>Guess The Number</h1>
+    <p id="rangeText">Try to guess the hidden number. You have 10 attempts.</p>
+
+    <div class="input-row">
+      <input id="guessInput" type="number" placeholder="Enter a number" />
+      <button id="guessBtn" type="button">Guess</button>
+    </div>
+
+    <div id="statusText" class="status">Waiting for your first guess...</div>
+    <div id="attemptsText" class="attempts">Attempts left: 10</div>
+
+    <div class="note">Run the Python server and refresh this page to play.</div>
+  </main>
+
+  <script>
+    const guessInput = document.getElementById("guessInput");
+    const guessBtn = document.getElementById("guessBtn");
+    const statusText = document.getElementById("statusText");
+    const attemptsText = document.getElementById("attemptsText");
+    const rangeText = document.getElementById("rangeText");
+
+    const setDisabled = (disabled) => {
+      guessInput.disabled = disabled;
+      guessBtn.disabled = disabled;
+    };
+
+    const startGame = async () => {
+      const response = await fetch("/start", { method: "POST" });
+      const data = await response.json();
+      rangeText.textContent = `Try to guess the hidden number between ${data.range[0]} and ${data.range[1]}. You have ${data.attempts_left} attempts.`;
+      attemptsText.textContent = `Attempts left: ${data.attempts_left}`;
+      statusText.textContent = "Waiting for your first guess...";
+      setDisabled(false);
+    };
+
+    const submitGuess = async () => {
+      const guessValue = guessInput.value;
+      if (!guessValue) {
+        statusText.textContent = "Please enter a number first.";
+        return;
+      }
+
+      const response = await fetch("/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guess: guessValue })
+      });
+
+      const data = await response.json();
+      statusText.textContent = data.message;
+      attemptsText.textContent = `Attempts left: ${data.attempts_left}`;
+
+      if (data.status === "correct" || data.status === "over") {
+        setDisabled(true);
+      }
+    };
+
+    guessBtn.addEventListener("click", submitGuess);
+    guessInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        submitGuess();
+      }
+    });
+
+    startGame();
+  </script>
+</body>
+</html>
