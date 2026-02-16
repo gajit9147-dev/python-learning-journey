@@ -13,3 +13,7 @@ except FileNotFoundError:
             print(content)  
     except FileNotFoundError as e:
         print(f"Error: {e}. The file you are trying to read does not exist. Please check the file name and try again.")
+    else:
+        print("File read successfully.")
+    finally:
+        print("This block will always execute, regardless of whether an exception occurred or not.")        
