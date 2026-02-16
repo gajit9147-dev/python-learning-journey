@@ -1,0 +1,2 @@
+This is my first file created using w mode in Python.
+Today i am very enjoying learning python file handling. 
